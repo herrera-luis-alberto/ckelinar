@@ -30,7 +30,7 @@ public:
 
 	/** Calculates the trayectory of the sonde starting from point begin
 	  * with up speed upSpeed and calculating eatch deltaT seconds */
-	vector<EarthPoint4D> getTrayectory(const EarthPoint4D &begin, float upSpeed, float deltaT);
+	vector<EarthPoint4D> getTrayectory(const EarthPoint4D &begin, float upSpeed, float deltaT, float sigmaNoise=0);
 
 protected:
 	//! data buffers
@@ -52,7 +52,7 @@ protected:
 
 	/** Calculate one iteration step, returns false if calculation was not
 	  * performed ( out of bound ) */
-	bool iterationStep( const EarthPoint4D &begin, EarthPoint4D &end, float upSpeed, float deltaT);
+	bool iterationStep( const EarthPoint4D &begin, EarthPoint4D &end, float upSpeed, float deltaT, float sigmaNoise);
 
 	/** Conversion from degrees to radians */
 	static float deg2rad( float deg);

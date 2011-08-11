@@ -2,8 +2,10 @@
 #include "MapViewer.h"
 #include <QApplication>
 #include <fstream>
+#include <sstream>
 using std::ofstream;
 using std::endl;
+using std::stringstream;
 
 int main(int argc, char *argv[])
 {
@@ -19,18 +21,13 @@ int main(int argc, char *argv[])
 	init.time = ptime( boost::gregorian::date( 2011, 5, 18), boost::posix_time::hours(19));
 	init.height = 520;
 
-	vector<EarthPoint4D> points = wf.getTrayectory( init, 5, 100);
-
-	ofstream out("out.mat");
-
-	for ( int i=0; i<points.size(); i++)
+	for ( int i=0; i<50; i++)
 	{
-		out<<points[i].latitude<<" "<<points[i].longitude<<" "<<points[i].height<<endl;
+		stringstream name;
+		name<<"Projection_"<<i<<endl;
+		vector<EarthPoint4D> points = wf.getTrayectory( init, 5, 100, 10);
+		map.setPath(name.str(), points);
 	}
-
-	out.close();
-
-	map.setPath("Projection", points);
 	map.show();
 
 	return app.exec();

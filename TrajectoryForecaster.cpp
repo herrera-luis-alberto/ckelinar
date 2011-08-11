@@ -1,6 +1,30 @@
 #include "TrajectoryForecaster.h"
 #include <netcdfcpp.h>
 #include <math.h>
+#include <iostream>
+using std::cout;
+using std::flush;
+using std::endl;
+
+double randn(double mu=0.0, double sigma=1.0) {
+	static bool deviateAvailable=false;
+	static float storedDeviate;
+	double dist, angle;
+
+	if (!deviateAvailable) {
+		dist=sqrt( -2.0 * log(double(rand()) / double(RAND_MAX)) );
+		angle=2.0 * M_PI * (double(rand()) / double(RAND_MAX));
+		storedDeviate=dist*cos(angle);
+		deviateAvailable=true;
+		return dist * sin(angle) * sigma + mu;
+	}
+
+	else
+	{
+		deviateAvailable=false;
+		return storedDeviate*sigma + mu;
+	}
+}
 
 
 TrajectoryForecaster::TrajectoryForecaster(const string &file)
@@ -18,7 +42,7 @@ TrajectoryForecaster::TrajectoryForecaster(const string &file)
 	, Z_p ( NULL )
 {
 
-	//logging<<"Reading data..."<<flush;
+	cout<<"Reading data..."<<flush;
 
 	NcFile data(file.c_str());
 
@@ -31,7 +55,7 @@ TrajectoryForecaster::TrajectoryForecaster(const string &file)
 
 	readTime( data );
 
-	//logging<<"Done!"<<endl;
+	cout<<"Done!"<<endl;
 
 
 }
@@ -54,7 +78,7 @@ TrajectoryForecaster::~TrajectoryForecaster()
 }
 
 
-vector<EarthPoint4D> TrajectoryForecaster::getTrayectory(const EarthPoint4D &begin, float upSpeed, float deltaT)
+vector<EarthPoint4D> TrajectoryForecaster::getTrayectory(const EarthPoint4D &begin, float upSpeed, float deltaT, float sigmaNoise)
 {
 	vector<EarthPoint4D> result;
 	result.push_back( begin );
@@ -67,7 +91,7 @@ vector<EarthPoint4D> TrajectoryForecaster::getTrayectory(const EarthPoint4D &beg
 
 	while ( iterations < 1000 )
 	{
-		if ( iterationStep( pre, post, upSpeed, deltaT) == false )
+		if ( iterationStep( pre, post, upSpeed, deltaT, sigmaNoise) == false )
 			break;
 		result.push_back( post );
 
@@ -78,7 +102,7 @@ vector<EarthPoint4D> TrajectoryForecaster::getTrayectory(const EarthPoint4D &beg
 	return result;
 }
 
-bool TrajectoryForecaster::iterationStep( const EarthPoint4D &begin, EarthPoint4D &end, float upSpeed, float deltaT)
+bool TrajectoryForecaster::iterationStep( const EarthPoint4D &begin, EarthPoint4D &end, float upSpeed, float deltaT, float sigmaNoise)
 {
 	int latIndex, lonIndex, heightIndex, timeIndex;
 	if ( getArrayIndex( begin, &latIndex, &lonIndex, &heightIndex, &timeIndex) == false )
@@ -101,8 +125,8 @@ bool TrajectoryForecaster::iterationStep( const EarthPoint4D &begin, EarthPoint4
 
 	float heightAlpha = (heightLevelH-begin.height) / (heightLevelH-heightLevelL);
 
-	float uAdd = linearInterpolation(heightAlpha, uAddL, uAddH);
-	float vAdd = linearInterpolation(heightAlpha, vAddL, vAddH);
+	float uAdd = linearInterpolation(heightAlpha, uAddL, uAddH)+randn(0, sigmaNoise);
+	float vAdd = linearInterpolation(heightAlpha, vAddL, vAddH)+randn(0, sigmaNoise);
 
 	const float dx = 111195;
 	end.latitude = begin.latitude + vAdd*deltaT/dx;
