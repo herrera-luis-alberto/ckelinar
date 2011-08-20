@@ -6,8 +6,11 @@ SET( BC_SRCS
 	main.cpp
 	TrajectoryForecaster.cpp
 	TrajectoryForecaster.h
+	EarthTrajectory.cpp
+	EarthTrajectory.h
 	MapViewer.cpp
 	MapViewer.h
+	BasicDataTypes.h
 )
 
   

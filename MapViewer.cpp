@@ -3,6 +3,7 @@
 #include <QStringList>
 #include <QGridLayout>
 #include <QWebView>
+#include <iostream>
 using std::stringstream;
 
 
@@ -20,14 +21,26 @@ MapViewer::MapViewer()
 	setLayout(layout);
 }
 
-void MapViewer::setPath(const string &name, const vector<EarthPoint4D> &path)
+void MapViewer::addPath(const EarthTrajectory &path)
 {
-	paths[name] = path;
+	paths.push_back( path );
+
+	QStringList code;
+	fillHtml(code);
+	std::cout<<code.join("\n").toStdString()<<std::endl;
+	viewer->setHtml(code.join("\n"));
+	update();
+}
+
+void MapViewer::addMark(const EarthPoint4D &mark)
+{
+	marks.push_back( mark );
 
 	QStringList code;
 	fillHtml(code);
 	viewer->setHtml(code.join("\n"));
 	update();
+
 }
 
 
@@ -62,20 +75,19 @@ void MapViewer::fillJavascript(QStringList &code)
 	    <<"mapTypeId: google.maps.MapTypeId.HYBRID};"
 	    <<"var map = new google.maps.Map(document.getElementById(\"map_canvas\"), myOptions);";
 	fillPathData( code );
+	fillMarkData( code );
 	code<<"}";
 }
 
 void MapViewer::fillPathData(QStringList &code)
 {
 
-	map<string,vector<EarthPoint4D> >::iterator it;
-
-	for ( it = paths.begin(); it != paths.end(); it++)
+	for ( int i=0; i<paths.size(); i++)
 	{
 
 		code<<"var flightPlanCoordinates = [";
 
-		vector<EarthPoint4D> currentPath = (*it).second;
+		EarthTrajectory currentPath = paths[i];
 
 		for ( int i=0; i<currentPath.size(); i++)
 		{
@@ -99,10 +111,17 @@ void MapViewer::fillPathData(QStringList &code)
 			<<"flightPath.setMap(map);";
 	}
 
-	/*new google.maps.LatLng(37.772323, -122.214897),
-	new google.maps.LatLng(21.291982, -157.821856),
-	new google.maps.LatLng(-18.142599, 178.431),
-	new google.maps.LatLng(-27.46758, 153.027892)*/
+}
+
+void MapViewer::fillMarkData(QStringList &code)
+{
+	for ( int i=0; i<marks.size(); i++)
+	{
+		stringstream line;
+		line<<"var latlng = new google.maps.LatLng("<<marks[i].latitude <<", "<< marks[i].longitude<<");";
+		code<<line.str().c_str();
+		code<<"new google.maps.Marker({ position: latlng,  map: map});";
+	}
 }
 
 void MapViewer::fillBody(QStringList &code)

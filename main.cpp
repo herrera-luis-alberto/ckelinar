@@ -25,8 +25,9 @@ int main(int argc, char *argv[])
 	{
 		stringstream name;
 		name<<"Projection_"<<i<<endl;
-		vector<EarthPoint4D> points = wf.getTrayectory( init, 5, 100, 10);
-		map.setPath(name.str(), points);
+		EarthTrajectory points = wf.getTrayectory( init, 5, 100, 1);
+		map.addPath(points);
+		map.addMark(points[points.size()-1]);
 	}
 	map.show();
 

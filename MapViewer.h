@@ -10,13 +10,16 @@ class MapViewer : public QWidget
 {
 public:
 	MapViewer();
-	void setPath(const string &name, const vector<EarthPoint4D> &path);
+	void addPath(const EarthTrajectory &path);
+	void addMark(const EarthPoint4D &mark);
 protected:
 	void fillHtml(QStringList &code);
 	void fillHead(QStringList &code);
 	void fillJavascript(QStringList &code);
 	void fillPathData(QStringList &code);
+	void fillMarkData(QStringList &code);
 	void fillBody(QStringList &code);
 	QWebView *viewer;
-	map<string,vector<EarthPoint4D> > paths;
+	vector<EarthTrajectory> paths;
+	vector<EarthPoint4D> marks;
 };

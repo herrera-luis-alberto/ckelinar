@@ -78,9 +78,9 @@ TrajectoryForecaster::~TrajectoryForecaster()
 }
 
 
-vector<EarthPoint4D> TrajectoryForecaster::getTrayectory(const EarthPoint4D &begin, float upSpeed, float deltaT, float sigmaNoise)
+EarthTrajectory TrajectoryForecaster::getTrayectory(const EarthPoint4D &begin, float upSpeed, float deltaT, float sigmaNoise)
 {
-	vector<EarthPoint4D> result;
+	EarthTrajectory result;
 	result.push_back( begin );
 
 

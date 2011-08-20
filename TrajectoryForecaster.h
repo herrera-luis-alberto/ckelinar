@@ -1,23 +1,14 @@
 #ifndef TRAJECTORYFORECASTER_H
 #define TRAJECTORYFORECASTER_H
 
+#include "EarthTrajectory.h"
 #include "boost/multi_array.hpp"
-#include "boost/date_time/posix_time/posix_time.hpp"
 #include <string>
 #include <vector>
 using std::string;
 using std::vector;
-using boost::posix_time::ptime;
 
 class NcFile;
-
-struct EarthPoint4D
-{
-	float latitude;
-	float longitude;
-	float height;
-	ptime time;
-};
 
 class TrajectoryForecaster
 {
@@ -30,7 +21,7 @@ public:
 
 	/** Calculates the trayectory of the sonde starting from point begin
 	  * with up speed upSpeed and calculating eatch deltaT seconds */
-	vector<EarthPoint4D> getTrayectory(const EarthPoint4D &begin, float upSpeed, float deltaT, float sigmaNoise=0);
+	EarthTrajectory getTrayectory(const EarthPoint4D &begin, float upSpeed, float deltaT, float sigmaNoise=0);
 
 protected:
 	//! data buffers
