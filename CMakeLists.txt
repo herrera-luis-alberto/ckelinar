@@ -26,6 +26,8 @@ SET( QT_USE_QT3SUPPORT TRUE )
 SET( QT_USE_QTXML TRUE )
 
 find_package(Qt4 REQUIRED QtCore QtGui QtOpenGL QtWebKit)
+find_package(Boost COMPONENTS system filesystem REQUIRED)
+link_directories(${Boost_LIBRARY_DIRS})
   
 INCLUDE( ${QT_USE_FILE} )
   
@@ -36,6 +38,6 @@ INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
   
 ADD_EXECUTABLE( BaseCamp ${BC_SRCS} ${BC_MOC_SRCS} ${BC_RC_SRCS} ${BC_UI_HDRS} )
 
-TARGET_LINK_LIBRARIES( BaseCamp ${QT_LIBRARIES} netcdf_c++)
+TARGET_LINK_LIBRARIES( BaseCamp ${QT_LIBRARIES} ${Boost_LIBRARIES} netcdf_c++)
 
 

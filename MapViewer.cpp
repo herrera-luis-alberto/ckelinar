@@ -27,7 +27,7 @@ void MapViewer::addPath(const EarthTrajectory &path)
 
 	QStringList code;
 	fillHtml(code);
-	std::cout<<code.join("\n").toStdString()<<std::endl;
+	//std::cout<<code.join("\n").toStdString()<<std::endl;
 	viewer->setHtml(code.join("\n"));
 	update();
 }
@@ -70,7 +70,10 @@ void MapViewer::fillJavascript(QStringList &code)
 	code<<"function initialize() {"
 	    <<"var latlng = new google.maps.LatLng(-33.46, -70.66);"
 	    <<"var myOptions = {"
-	    <<"zoom: 16,"
+	    <<"zoom: 10,"
+	    <<"panControl: true,"
+	    <<"zoomControl: true,"
+	    <<"scaleControl: true,"
 	    <<"center: latlng,"
 	    <<"mapTypeId: google.maps.MapTypeId.HYBRID};"
 	    <<"var map = new google.maps.Map(document.getElementById(\"map_canvas\"), myOptions);";
