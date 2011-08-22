@@ -1,17 +1,31 @@
+#include "PortDefinitions.h"
+#include "Sensirion.h"
+#include "DataInterface.h"
 
-int analogPin = 3;
-int val = 0;
+Sensirion sensirion = Sensirion( sensirionDataPin, sensirionClockPin);
+DataInterface dataInterface;
 
 void setup() {
-  Serial.begin( 38400 );
-  Serial.println("Init...");
+  dataInterface.begin();
 }
 
 void loop() {
-  Serial.println("val: ");
-  val = analogRead(analogPin);
-  Serial.println(val);
+  uint16_t rawData;
+  dataInterface.startDataFrame();
+  dataInterface.print(":");
+  dataInterface.print( analogRead( analogPressurePort ) );
+  dataInterface.print("|");
+  dataInterface.print( analogRead( analogTemperaturePort ) );
+  dataInterface.print("|");
+  dataInterface.print( analogRead( analogHumidityPort ) );
+  dataInterface.print("|");
+  sensirion.measTemp(&rawData);
+  dataInterface.print(rawData);
+  dataInterface.print("|");
+  sensirion.measHumi(&rawData);
+  dataInterface.print(rawData);
+  dataInterface.println();
+  dataInterface.startDataFrame();
   delay(1000);
-
 }
 
