@@ -53,7 +53,7 @@ unsigned int EarthTrajectory::size()
 	return data.size();
 }
 
-vector<EarthPoint4D> EarthTrajectory::interpolateAtHeight(float height)
+vector<EarthPoint4D> EarthTrajectory::findLevelPoints(float height)
 {
 	vector<EarthPoint4D> result;
 

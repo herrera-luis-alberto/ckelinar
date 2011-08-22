@@ -23,10 +23,10 @@ void loadHistorical(MapViewer &map)
 			EarthTrajectory tr;
 			tr.readFromFile( itr->path().c_str() );
 			map.addPath(tr);
-			vector<EarthPoint4D> marks = tr.interpolateAtHeight(5000);
+			vector<EarthPoint4D> marks = tr.findLevelPoints(5000);
 			if ( marks.size()>0)
 			{
-				map.addMark(marks[0]);
+				map.addMarker(marks[0]);
 			}
 		}
 	}

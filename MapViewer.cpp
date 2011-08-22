@@ -32,7 +32,7 @@ void MapViewer::addPath(const EarthTrajectory &path)
 	update();
 }
 
-void MapViewer::addMark(const EarthPoint4D &mark)
+void MapViewer::addMarker(const EarthPoint4D &mark)
 {
 	marks.push_back( mark );
 
@@ -59,13 +59,13 @@ void MapViewer::fillHead(QStringList &code)
 	    <<"<script type=\"text/javascript\" src=\"http://maps.google.com/maps/api/js?sensor=false\"></script>"
 	    <<"<script type=\"text/javascript\">";
 
-	fillJavascript(code);
+	fillJavaScript(code);
 
 	code<<"</script></head>";
 
 }
 
-void MapViewer::fillJavascript(QStringList &code)
+void MapViewer::fillJavaScript(QStringList &code)
 {
 	code<<"function initialize() {"
 	    <<"var latlng = new google.maps.LatLng(-33.46, -70.66);"
@@ -78,7 +78,7 @@ void MapViewer::fillJavascript(QStringList &code)
 	    <<"mapTypeId: google.maps.MapTypeId.HYBRID};"
 	    <<"var map = new google.maps.Map(document.getElementById(\"map_canvas\"), myOptions);";
 	fillPathData( code );
-	fillMarkData( code );
+	fillMarkerData( code );
 	code<<"}";
 }
 
@@ -116,7 +116,7 @@ void MapViewer::fillPathData(QStringList &code)
 
 }
 
-void MapViewer::fillMarkData(QStringList &code)
+void MapViewer::fillMarkerData(QStringList &code)
 {
 	for ( int i=0; i<marks.size(); i++)
 	{
