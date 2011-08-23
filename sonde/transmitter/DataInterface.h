@@ -31,6 +31,8 @@ public:
   void startDataFrame()
   {
       dataFile = SD.open("datalog.txt", O_CREAT | O_APPEND | O_WRITE);
+      print(":");
+      first = true;
   }
 
   void endDataFrame()
@@ -43,9 +45,29 @@ public:
     Serial.write(data);
     dataFile.write(data);
   }
+  
+  void sendData(int data)
+  {
+    printSeparator();
+    print(data);
+  }
+  
+  void sendData(const char data[])
+  {
+    printSeparator();
+    print(data);
+  }
 
 private:
   File dataFile;
+  bool first;
+  
+  bool printSeparator()
+  {
+    if (!first)
+      print("|");
+    first = false;
+  }
 };
 
 #endif
