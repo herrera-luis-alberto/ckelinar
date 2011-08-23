@@ -22,9 +22,8 @@ enum GPSDataFileds
   DiffReffStationID,
   NoDataFields
 };
-#define MaxDataLenght 10
 
-const char *expectedHeader = "GPGGA,";
+#define MaxDataLenght 16
 
 enum GPSState
 {
@@ -37,30 +36,14 @@ enum GPSState
 class GPSReader
 {
 public:
-  GPSReader()
-  : port (GPSRxPin, GPSTxPin)
-  {
-    state = WaitForStart;
-  }
+  GPSReader();
   
-  void begin()
-  {
-    port.begin(4800);
-  }
+  void begin();
   
-  void fetchPositionData()
-  {
-    currentFieldReading = 0;
-    currentFieldReadingPos = 0;
-    state = WaitForStart;
-    
-    while ( state != DataOK )
-      evaluateStateMachine();
-  }
+  void fetchPositionData();
+  char *getRawData( uint8_t field );
   
-  char tmp;
-  
-//protected:
+protected:
   SoftwareSerial port;
   GPSState state;
   char incommingDataBuffers[NoDataFields][MaxDataLenght];
@@ -68,51 +51,7 @@ public:
   uint8_t currentFieldReading;
   uint8_t currentFieldReadingPos;
 
-  void evaluateStateMachine()
-  {
-    uint8_t i;
-    char inChar;
-    switch ( state )
-    {
-      case WaitForStart:
-	inChar = port.read();
-	if ( inChar == '$' )
-	  state = ReadHeader;
-	break;
-      case ReadHeader:
-	for ( i=0; i<6; i++)
-	{
-	  inChar = port.read();
-	  if ( inChar != expectedHeader[i] )
-	  {
-	    state = WaitForStart;
-	    return;
-	  }
-	}
-	state = ReadData;
-	break;
-      case ReadData:
-	inChar = port.read();
-	if ( inChar == '*' )
-	{
-	  incommingDataBuffers[currentFieldReading][currentFieldReadingPos] = '\0';
-	  state = DataOK;
-	  return;
-	}
-	if ( inChar == ',' )
-	{
-	  incommingDataBuffers[currentFieldReading][currentFieldReadingPos] = '\0';
-	  currentFieldReading++;
-	  currentFieldReadingPos = 0;
-	  return;
-	}
-	incommingDataBuffers[currentFieldReading][currentFieldReadingPos++] = inChar;
-	
-	break;
-      case DataOK:
-	break;
-    }
-  }
+  void evaluateStateMachine();
   
   
 };

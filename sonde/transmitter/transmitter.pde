@@ -14,17 +14,6 @@ void setup() {
 
 void loop() {
   
-  
-  /*gps.fetchPositionData();
-  Serial.println("S: ") ;
-  for ( int i=0; i<NoDataFields; i++)
-  {
-    Serial.print("B:<") ;
-    Serial.print( gps.incommingDataBuffers[i] );
-    Serial.println(">") ;
-  }
-  
-  return;*/
   uint16_t rawData;
   dataInterface.startDataFrame();
   dataInterface.sendData( analogRead( analogPressurePort ) );
@@ -37,10 +26,10 @@ void loop() {
   dataInterface.sendData(rawData);
 
   gps.fetchPositionData();
-  dataInterface.sendData( gps.incommingDataBuffers[UTCTime] );
-  dataInterface.sendData( gps.incommingDataBuffers[Latitude] );
-  dataInterface.sendData( gps.incommingDataBuffers[Longitude] );
-  dataInterface.sendData( gps.incommingDataBuffers[MSLAltitude] );
+  dataInterface.sendData( gps.getRawData(UTCTime) );
+  dataInterface.sendData( gps.getRawData(Latitude) );
+  dataInterface.sendData( gps.getRawData(Longitude) );
+  dataInterface.sendData( gps.getRawData(MSLAltitude) );
   dataInterface.println();
   dataInterface.endDataFrame();
   delay(1000);
