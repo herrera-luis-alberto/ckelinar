@@ -27,7 +27,9 @@ void loop() {
 
   gps.fetchPositionData();
   dataInterface.sendData( gps.getRawData(UTCTime) );
+  dataInterface.sendData( (gps.getRawData(NSIndicator)[0]=='S') ? "-" : "" );
   dataInterface.sendData( gps.getRawData(Latitude) );
+  dataInterface.sendData( (gps.getRawData(EWIndicator)[0]=='W') ? "-" : "" );
   dataInterface.sendData( gps.getRawData(Longitude) );
   dataInterface.sendData( gps.getRawData(MSLAltitude) );
   dataInterface.println();
