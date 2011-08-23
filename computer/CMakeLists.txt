@@ -10,11 +10,16 @@ SET( BC_SRCS
 	EarthTrajectory.h
 	MapViewer.cpp
 	MapViewer.h
+        MainWindow.cpp
+        MainWindow.h
+        SondeViewer.cpp
+        SondeViewer.h
 	BasicDataTypes.h
 )
 
   
 SET( BC_MOC_HDRS
+SondeViewer.h
 )
   
 # SET( BC_UIS Dialog1.ui )

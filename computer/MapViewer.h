@@ -17,7 +17,7 @@ public:
         /**
           * Mapviewer constructor.
           */
-	MapViewer();
+        MapViewer( QWidget *parent );
 
         /**
           * \brief addPath adds an EarthTrajectory to the map.

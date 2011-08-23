@@ -7,8 +7,8 @@
 using std::stringstream;
 
 
-MapViewer::MapViewer()
-	: QWidget(NULL)
+MapViewer::MapViewer( QWidget *parent )
+        : QWidget(parent)
 {
 	QGridLayout *layout = new QGridLayout(1,1);
 
