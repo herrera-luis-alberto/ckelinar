@@ -5,6 +5,7 @@
 ReadingThread::ReadingThread(const QString &port)
     : isRunning ( true )
     , portName ( port )
+    , serial(port.toStdString(), 38400)
 {
 }
 
@@ -12,12 +13,47 @@ void ReadingThread::run()
 {
     while( isRunning )
     {
+        process( serial.readLine() );
+
     }
 }
 
 void ReadingThread::requestStop()
 {
     isRunning = false;
+}
+
+void ReadingThread::process( const string &frame)
+{
+    QString myframe(frame.c_str());
+
+    QStringList fields = myframe.split("|");
+
+    if ( fields.size() < 8 )
+        return;
+
+    SondeData data;
+
+    float dd, mm;
+
+    //! TODO harcoded => change!!
+    data.location.latitude = fields[6].toFloat();
+    dd = int(data.location.latitude/100);
+    mm = data.location.latitude-100*dd;
+    data.location.latitude = dd + mm/60;
+
+    if ( fields[7] == "S" )
+        data.location.latitude *= -1;
+
+    data.location.longitude = fields[8].toFloat();
+    dd = int(data.location.longitude/100);
+    mm = data.location.longitude-100*dd;
+    data.location.longitude = dd + mm/60;
+    if ( fields[9] == "W" )
+        data.location.latitude *= -1;
+
+    emit newSondeData( data );
+    emit newSondeMsg( myframe );
 }
 
 
@@ -47,7 +83,6 @@ SondeViewer::SondeViewer(QWidget *parent)
     connect( disconnectButton, SIGNAL(clicked(bool)), this, SLOT(disconnectSlot()));
 
 
-
 }
 
 void SondeViewer::connectSlot()
@@ -55,6 +90,8 @@ void SondeViewer::connectSlot()
    readThread = new ReadingThread( port->text() );
    connectButton->setEnabled(false);
    disconnectButton->setEnabled(true);
+   connect( readThread, SIGNAL(newSondeMsg(QString)), this, SLOT(newSondeMsg(QString)));
+   connect( readThread, SIGNAL(newSondeData(SondeData)), this, SIGNAL(newSondeData(SondeData)));
    readThread->start();
 }
 
@@ -62,6 +99,7 @@ void SondeViewer::disconnectSlot()
 {
     readThread->requestStop();
     readThread->wait();
+    delete readThread;
 
     connectButton->setEnabled(true);
     disconnectButton->setEnabled(false);
@@ -69,5 +107,5 @@ void SondeViewer::disconnectSlot()
 
 void SondeViewer::newSondeMsg(QString msg)
 {
-    log->insertPlainText( msg );
+    log->insertPlainText( msg + '\n' );
 }

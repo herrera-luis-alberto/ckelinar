@@ -15,11 +15,13 @@ SET( BC_SRCS
         SondeViewer.cpp
         SondeViewer.h
 	BasicDataTypes.h
+        SimpleSerial.h
 )
 
   
 SET( BC_MOC_HDRS
-SondeViewer.h
+    MainWindow.h
+    SondeViewer.h
 )
   
 # SET( BC_UIS Dialog1.ui )

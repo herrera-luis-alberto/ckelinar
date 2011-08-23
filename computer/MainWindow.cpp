@@ -11,5 +11,12 @@ MainWindow::MainWindow()
     layout->addWidget( map, 0, 0);
     layout->addWidget( sonde, 1, 0);
     setLayout(layout);
+
+    connect( sonde, SIGNAL(newSondeData(SondeData)), this, SLOT(newSondeData(SondeData)));
 }
 
+void MainWindow::newSondeData(SondeData data)
+{
+    realTimeTrajectory.push_back(data.location);
+    map->addPath(realTimeTrajectory);
+}

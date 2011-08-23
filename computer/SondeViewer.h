@@ -2,17 +2,15 @@
 #define SONDEVIEWER_H
 
 #include "BasicDataTypes.h"
+#include "SimpleSerial.h"
 #include <QThread>
 #include <QWidget>
 #include <QPushButton>
 #include <QLineEdit>
 #include <QTextEdit>
+using std::string;
 
-class SondeData
-{
-public:
-    EarthPoint4D location;
-};
+
 
 class ReadingThread : public QThread
 {
@@ -25,8 +23,10 @@ signals:
     void newSondeData(SondeData data);
     void newSondeMsg(QString msg);
 protected:
+    void process( const string &frame);
     bool isRunning;
     QString portName;
+    SimpleSerial serial;
 
 };
 

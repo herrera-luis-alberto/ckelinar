@@ -32,7 +32,6 @@ void loop() {
   dataInterface.sendData( (gps.getRawData(EWIndicator)[0]=='W') ? "-" : "" );
   dataInterface.sendData( gps.getRawData(Longitude) );
   dataInterface.sendData( gps.getRawData(MSLAltitude) );
-  dataInterface.println();
   dataInterface.endDataFrame();
   delay(1000);
 }

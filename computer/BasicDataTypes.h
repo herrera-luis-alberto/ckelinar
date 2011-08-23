@@ -34,4 +34,10 @@ struct EarthPoint4D
         ptime time;
 };
 
+class SondeData
+{
+public:
+    EarthPoint4D location;
+};
+
 #endif // BASICDATATYPES_H

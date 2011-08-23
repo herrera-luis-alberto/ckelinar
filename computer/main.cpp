@@ -1,6 +1,8 @@
 #include "TrajectoryForecaster.h"
+#include "BasicDataTypes.h"
 #include "MainWindow.h"
 #include <QApplication>
+ #include <QMetaType>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -34,6 +36,7 @@ namespace fs = boost::filesystem;
 
 int main(int argc, char *argv[])
 {
+    qRegisterMetaType<SondeData>("SondeData");
 	QApplication app(argc, argv);
         MainWindow mainWindow;
         mainWindow.show();
