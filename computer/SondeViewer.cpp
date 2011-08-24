@@ -57,12 +57,14 @@ SondeData ReadingThread::DataFromFields( QStringList fields ) {
                                                   boost::posix_time::seconds(seconds) );
 
     data.location.latitude = latitude2degrees( fields[GPSLatitude].toFloat() );
+
     if ( fields[GPSLatitudeSign] == "-" )
         data.location.latitude *= -1;
 
+
     data.location.longitude = longitude2degrees( fields[GPSLongitude].toFloat() );
     if ( fields[GPSLongitudeSign] == "-" )
-        data.location.latitude *= -1;
+        data.location.longitude *= -1;
 
     data.location.height = fields[GPSHeight].toFloat();
 
