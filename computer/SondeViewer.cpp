@@ -1,6 +1,8 @@
 #include "SondeViewer.h"
 #include <QHBoxLayout>
 #include <QLabel>
+#include <iostream>
+using namespace std;
 
 ReadingThread::ReadingThread(const QString &port)
     : isRunning ( true )
@@ -37,20 +39,24 @@ void ReadingThread::process( const string &frame)
     float dd, mm;
 
     //! TODO harcoded => change!!
-    data.location.latitude = fields[6].toFloat();
+    data.location.latitude = fields[7].toFloat();
     dd = int(data.location.latitude/100);
     mm = data.location.latitude-100*dd;
     data.location.latitude = dd + mm/60;
 
-    if ( fields[7] == "S" )
+    if ( fields[6] == "-" )
         data.location.latitude *= -1;
 
-    data.location.longitude = fields[8].toFloat();
+    data.location.longitude = fields[9].toFloat();
     dd = int(data.location.longitude/100);
     mm = data.location.longitude-100*dd;
     data.location.longitude = dd + mm/60;
-    if ( fields[9] == "W" )
-        data.location.latitude *= -1;
+    if ( fields[8] == "-" )
+        data.location.longitude *= -1;
+
+   cout<<data.location.latitude<<endl;
+   cout<<data.location.longitude<<endl;
+
 
     emit newSondeData( data );
     emit newSondeMsg( myframe );
