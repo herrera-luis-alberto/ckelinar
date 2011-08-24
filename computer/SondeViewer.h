@@ -8,7 +8,9 @@
 #include <QPushButton>
 #include <QLineEdit>
 #include <QTextEdit>
+#include "boost/date_time/posix_time/posix_time.hpp"
 using std::string;
+using boost::posix_time::ptime;
 
 
 
@@ -19,10 +21,25 @@ public:
     ReadingThread(const QString &port);
     void run();
     void requestStop();
+
+    /**
+      * \brief Convert latitude from GPS to degrees and minutes,
+      * the way Google Maps reads it.
+      * \param lat is the raw latitude from the GPS.
+      */
+    float latitude2degrees( float lat );
+
+    /**
+      * \brief Convert longitude from GPS to degrees and minutes,
+      * the way Google Maps reads it.
+      * \param lon is the raw longitude from the GPS.
+      */
+    float longitude2degrees( float lat );
 signals:
     void newSondeData(SondeData data);
     void newSondeMsg(QString msg);
 protected:
+    SondeData DataFromFields( QStringList fields );
     void process( const string &frame);
     bool isRunning;
     QString portName;

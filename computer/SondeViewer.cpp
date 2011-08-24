@@ -2,9 +2,27 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <iostream>
+
 using namespace std;
 
-ReadingThread::ReadingThread(const QString &port)
+enum SondeFields
+{
+    PreassureAnalog = 0,
+    TemperatureAnalog,
+    HumidityAnalog,
+    TemperatureSensirion,
+    HumiditySensirion,
+    GPSTime,
+    GPSLatitudeSign,
+    GPSLatitude,
+    GPSLongitudeSign,
+    GPSLongitude,
+    GPSHeight,
+    SondeFieldCount
+};
+
+
+ReadingThread::ReadingThread( const QString &port )
     : isRunning ( true )
     , portName ( port )
     , serial(port.toStdString(), 38400)
@@ -25,38 +43,70 @@ void ReadingThread::requestStop()
     isRunning = false;
 }
 
-void ReadingThread::process( const string &frame)
+
+
+SondeData ReadingThread::DataFromFields( QStringList fields ) {
+    SondeData data;
+
+    int hour = fields[GPSTime].mid(0,2).toInt();
+    int minutes = fields[GPSTime].mid(2,2).toInt();
+    double seconds = fields[GPSTime].mid(4).toDouble();
+    data.location.time = boost::posix_time::ptime( boost::posix_time::second_clock::universal_time().date(),
+                                                  boost::posix_time::hours(hour) +
+                                                  boost::posix_time::minutes(minutes) +
+                                                  boost::posix_time::seconds(seconds) );
+
+    data.location.latitude = latitude2degrees( fields[GPSLatitude].toFloat() );
+    if ( fields[GPSLatitudeSign] == "-" )
+        data.location.latitude *= -1;
+
+    data.location.longitude = longitude2degrees( fields[GPSLongitude].toFloat() );
+    if ( fields[GPSLongitudeSign] == "-" )
+        data.location.latitude *= -1;
+
+    data.location.height = fields[GPSHeight].toFloat();
+
+    return data;
+}
+
+float ReadingThread::latitude2degrees( float lat ) {
+    float degrees, minutes;
+
+    degrees = int(lat/100);
+    minutes = lat-100*degrees;
+    lat = degrees + minutes/60;
+
+    return lat;
+}
+
+float ReadingThread::longitude2degrees( float lon ) {
+    float degrees, minutes;
+
+    degrees = int(lon/100);
+    minutes = lon-100*degrees;
+    lon = degrees + minutes/60;
+
+    return lon;
+}
+
+
+void ReadingThread::process( const string &frame )
 {
     QString myframe(frame.c_str());
 
     QStringList fields = myframe.split("|");
 
-    if ( fields.size() < 8 )
+
+    if ( fields.size() != SondeFieldCount ) { /* REVISAR ! */
         return;
+    }
 
-    SondeData data;
+    SondeData data = DataFromFields( fields );
 
-    float dd, mm;
-
-    //! TODO harcoded => change!!
-    data.location.latitude = fields[7].toFloat();
-    dd = int(data.location.latitude/100);
-    mm = data.location.latitude-100*dd;
-    data.location.latitude = dd + mm/60;
-
-    if ( fields[6] == "-" )
-        data.location.latitude *= -1;
-
-    data.location.longitude = fields[9].toFloat();
-    dd = int(data.location.longitude/100);
-    mm = data.location.longitude-100*dd;
-    data.location.longitude = dd + mm/60;
-    if ( fields[8] == "-" )
-        data.location.longitude *= -1;
-
-   cout<<data.location.latitude<<endl;
-   cout<<data.location.longitude<<endl;
-
+    cout<<data.location.time<<endl;
+    cout<<data.location.latitude<<endl;
+    cout<<data.location.longitude<<endl;
+    cout<<data.location.height<<endl;
 
     emit newSondeData( data );
     emit newSondeMsg( myframe );

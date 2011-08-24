@@ -29,7 +29,6 @@ void MapViewer::addPath(const EarthTrajectory &path)
 	fillHtml(code);
 	//std::cout<<code.join("\n").toStdString()<<std::endl;
 	viewer->setHtml(code.join("\n"));
-	update();
 }
 
 void MapViewer::addMarker(const EarthPoint4D &mark)
@@ -39,8 +38,16 @@ void MapViewer::addMarker(const EarthPoint4D &mark)
 	QStringList code;
 	fillHtml(code);
 	viewer->setHtml(code.join("\n"));
-	update();
+}
 
+void MapViewer::clear()
+{
+	paths.clear();
+	marks.clear();
+
+	QStringList code;
+	fillHtml(code);
+	viewer->setHtml(code.join("\n"));
 }
 
 
@@ -76,7 +83,8 @@ void MapViewer::fillJavaScript(QStringList &code)
 	    <<"scaleControl: true,"
 	    <<"center: latlng,"
 	    <<"mapTypeId: google.maps.MapTypeId.HYBRID};"
-	    <<"var map = new google.maps.Map(document.getElementById(\"map_canvas\"), myOptions);";
+            <<"var map = new google.maps.Map(document.getElementById(\"map_canvas\"), myOptions);"
+            <<"map.setTilt(0);";
 	fillPathData( code );
 	fillMarkerData( code );
 	code<<"}";

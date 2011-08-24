@@ -12,11 +12,23 @@ MainWindow::MainWindow()
     layout->addWidget( sonde, 1, 0);
     setLayout(layout);
 
+    updateMap = new QTimer(this);
+
     connect( sonde, SIGNAL(newSondeData(SondeData)), this, SLOT(newSondeData(SondeData)));
+    connect(updateMap, SIGNAL(timeout()), this, SLOT(reloadMap()));
+
+    updateMap->start( 20000 );
+
 }
 
 void MainWindow::newSondeData(SondeData data)
 {
     realTimeTrajectory.push_back(data.location);
+
+}
+
+void MainWindow::reloadMap()
+{
+    map->clear();
     map->addPath(realTimeTrajectory);
 }

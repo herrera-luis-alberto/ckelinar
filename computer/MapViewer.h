@@ -31,6 +31,8 @@ public:
           */
         void addMarker(const EarthPoint4D &marker);
 
+        void clear();
+
 protected:
         /**
           * \brief fillHtml is a method that generates html code.
