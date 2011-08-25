@@ -14,4 +14,8 @@
 #define GPSRxPin 4
 #define GPSTxPin 5
 
+//transmiter
+#define communicationRxPin 9
+#define communicationTxPin 3
+
 #endif

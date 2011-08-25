@@ -2,21 +2,23 @@
 #include "PortDefinitions.h"
 
 DataInterface::DataInterface()
+    : serialImpl ( communicationRxPin, communicationTxPin)
 {
+    serial = &serialImpl;
 }
 
 void DataInterface::begin()
 {
-  Serial.begin( 38400 );
+  serialImpl.begin( 1200 );
   pinMode(10, OUTPUT);
 
   const int chipSelect = 8;
-  Serial.print("SD...");
+  serial->print("SD...");
   if (!SD.begin( chipSelect )) {
-    Serial.println("FAIL");
+    serial->println("FAIL");
     return;
   } else {
-    Serial.println("OK");
+    serial->println("OK");
   }
 
   println("Init...");
@@ -36,7 +38,7 @@ void DataInterface::endDataFrame()
 
 void DataInterface::write(uint8_t data)
 {
-  Serial.write(data);
+  serial->write(data);
   dataFile.write(data);
 }
 

@@ -1,6 +1,8 @@
 #ifndef DATAINTERFACE_H
 #define DATAINTERFACE_H
 
+#include <NewSoftSerial.h>
+
 #include <SD.h>
 
 class DataInterface : public Print
@@ -19,6 +21,8 @@ private:
   bool first;
   
   bool printSeparator();
+  NewSoftSerial serialImpl;
+  Print *serial;
 };
 
 #endif
