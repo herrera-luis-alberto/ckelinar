@@ -2,10 +2,13 @@
 #include "MapViewer.h"
 #include "SondeViewer.h"
 #include <QGridLayout>
+#include <vector>
+using std::vector;
 
 MainWindow::MainWindow()
+    : forecaster ( "wrfout_d02_160511.nc" )
 {
-    QGridLayout *layout = new QGridLayout;
+    QGridLayout *layout = new QGridLayout(this);
     map = new MapViewer(this);
     sonde = new SondeViewer(this);
     layout->addWidget( map, 0, 0);
@@ -44,6 +47,23 @@ MainWindow::MainWindow()
     initialHeight->setValue(547);
     initialHeight->setDecimals(0);
     initialHeight->setSingleStep(1);
+    initialYear = new QSpinBox(this);
+    initialYear->setRange(2010, 2020);
+    initialYear->setValue(2011);
+
+    initialMonth = new QSpinBox(this);
+    initialMonth->setRange(1, 12);
+    initialMonth->setValue(8);
+    initialDay = new QSpinBox(this);
+    initialDay->setRange(1, 31);
+    initialYear->setValue(20);
+    initialHour = new QSpinBox(this);
+    initialHour->setRange(0, 23);
+    initialHour->setValue(19);
+    initialMinute = new QSpinBox(this);
+    initialMinute->setRange(0, 59);
+    initialMinute->setValue(0);
+
     upSpeed = new QDoubleSpinBox(this);
     upSpeed->setRange(0, 10);
     upSpeed->setValue(5);
@@ -77,12 +97,24 @@ MainWindow::MainWindow()
     controlLayout->addWidget( initialLongitude, 6, 1);
     controlLayout->addWidget( new QLabel("Initial Height"), 7, 0);
     controlLayout->addWidget( initialHeight, 7, 1);
-    controlLayout->addWidget( new QLabel("Up Speed"), 8, 0);
-    controlLayout->addWidget( upSpeed, 8, 1);
-    controlLayout->addWidget( new QLabel("Down Speed"), 9, 0);
-    controlLayout->addWidget( downSpeed, 9, 1);
-    controlLayout->addWidget( new QLabel("Release Heaight"), 10, 0);
-    controlLayout->addWidget( releaseHeight, 10, 1);
+
+    controlLayout->addWidget( new QLabel("Initial Year"), 8, 0);
+    controlLayout->addWidget( initialYear, 8, 1);
+    controlLayout->addWidget( new QLabel("Initial Month"), 9, 0);
+    controlLayout->addWidget( initialMonth, 9, 1);
+    controlLayout->addWidget( new QLabel("Initial Day"), 10, 0);
+    controlLayout->addWidget( initialDay, 10, 1);
+    controlLayout->addWidget( new QLabel("Initial Hour"), 11, 0);
+    controlLayout->addWidget( initialHour, 11, 1);
+    controlLayout->addWidget( new QLabel("Initial Minute"), 12, 0);
+    controlLayout->addWidget( initialMinute, 12, 1);
+
+    controlLayout->addWidget( new QLabel("Up Speed"), 13, 0);
+    controlLayout->addWidget( upSpeed, 13, 1);
+    controlLayout->addWidget( new QLabel("Down Speed"), 14, 0);
+    controlLayout->addWidget( downSpeed, 14, 1);
+    controlLayout->addWidget( new QLabel("Release Heaight"), 15, 0);
+    controlLayout->addWidget( releaseHeight, 15, 1);
 
 
     QGridLayout *dataLayout = new QGridLayout;
@@ -139,4 +171,32 @@ void MainWindow::reloadMap()
     map->setZoomLevel( mapZoomLevel->value() );
     map->clear();
     map->addPath(realTimeTrajectory);
+
+    EarthPoint4D init;
+    init.latitude = initialLatitude->value();
+    init.longitude = initialLongitude->value();
+    init.height = initialHeight->value();
+
+    int year = initialYear->value();
+    int month = initialMonth->value();
+    int day = initialDay->value();
+    int hour = initialHour->value();
+    int minute = initialMinute->value();
+
+    init.time = ptime( boost::gregorian::date( year, month, day),
+		       boost::posix_time::hours(hour) + boost::posix_time::minutes(minute) );
+
+
+    EarthTrajectory staticPredictedUp = forecaster.getTrayectory( init, upSpeed->value(), 100);
+    vector<EarthPoint4D> releasePoint = staticPredictedUp.findLevelPoints( releaseHeight->value() );
+
+    if ( releasePoint.size() > 0)
+    {
+	map->addMarker( releasePoint[0] );
+	EarthTrajectory staticPredictedDown = forecaster.getTrayectory( releasePoint[0], downSpeed->value(), 100);
+	map->addPath(staticPredictedDown);
+    }
+
+    map->addPath(staticPredictedUp);
+
 }

@@ -33,6 +33,9 @@ void MapViewer::addPath(const EarthTrajectory &path)
 
 void MapViewer::addMarker(const EarthPoint4D &mark)
 {
+    std::cout<<"Marker"<<std::endl;
+    std::cout<<mark.time<<std::endl;
+
 	marks.push_back( mark );
 
 	QStringList code;

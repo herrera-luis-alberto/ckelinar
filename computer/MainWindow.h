@@ -5,6 +5,7 @@
 #include <QPushButton>
 #include "BasicDataTypes.h"
 #include "EarthTrajectory.h"
+#include "TrajectoryForecaster.h"
 
 class MapViewer;
 class SondeViewer;
@@ -18,6 +19,7 @@ public slots:
     void newSondeData(SondeData data);
     void reloadMap();
 protected:
+    TrajectoryForecaster forecaster;
     MapViewer *map;
     SondeViewer *sonde;
     QTimer *updateMap;
@@ -32,6 +34,11 @@ protected:
     QDoubleSpinBox *initialLatitude;
     QDoubleSpinBox *initialLongitude;
     QDoubleSpinBox *initialHeight;
+    QSpinBox *initialYear;
+    QSpinBox *initialMonth;
+    QSpinBox *initialDay;
+    QSpinBox *initialHour;
+    QSpinBox *initialMinute;
     QDoubleSpinBox *upSpeed;
     QDoubleSpinBox *downSpeed;
     QDoubleSpinBox *releaseHeight;

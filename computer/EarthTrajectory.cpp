@@ -70,6 +70,12 @@ vector<EarthPoint4D> EarthTrajectory::findLevelPoints(float height)
 			newPoint.latitude = alpha*data[i].latitude+(1-alpha)*data[i+1].latitude;
 			newPoint.longitude= alpha*data[i].longitude+(1-alpha)*data[i+1].longitude;
 			newPoint.height= alpha*data[i].height+(1-alpha)*data[i+1].height;
+
+			boost::posix_time::time_duration delta = data[i].time - data[i+1].time;
+			delta = delta*alpha;
+
+			newPoint.time =  data[i+1].time + delta;
+
 			result.push_back(newPoint);
 
 		}
