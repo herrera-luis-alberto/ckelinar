@@ -1,5 +1,7 @@
 #include <QWidget>
 #include <QTimer>
+#include <QDoubleSpinBox>
+#include <QLabel>
 #include "BasicDataTypes.h"
 #include "EarthTrajectory.h"
 
@@ -20,6 +22,19 @@ protected:
     QTimer *updateMap;
 
     EarthTrajectory realTimeTrajectory;
+
+    QDoubleSpinBox *initialLatitude;
+    QDoubleSpinBox *initialLongitude;
+    QDoubleSpinBox *initialHeight;
+    QDoubleSpinBox *upSpeed;
+    QDoubleSpinBox *downSpeed;
+    QDoubleSpinBox *releaseHeight;
+
+    QLabel *analogPressure;
+    QLabel *analogHumidity;
+    QLabel *analogTemperature;
+    QLabel *sensirionTemperature;
+    QLabel *sensirionHumidity;
 
 
 };

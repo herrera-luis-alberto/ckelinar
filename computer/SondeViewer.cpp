@@ -5,23 +5,6 @@
 
 using namespace std;
 
-enum SondeFields
-{
-    PreassureAnalog = 0,
-    TemperatureAnalog,
-    HumidityAnalog,
-    TemperatureSensirion,
-    HumiditySensirion,
-    GPSTime,
-    GPSLatitudeSign,
-    GPSLatitude,
-    GPSLongitudeSign,
-    GPSLongitude,
-    GPSHeight,
-    SondeFieldCount
-};
-
-
 ReadingThread::ReadingThread( const QString &port )
     : isRunning ( true )
     , portName ( port )
@@ -45,7 +28,8 @@ void ReadingThread::requestStop()
 
 
 
-SondeData ReadingThread::DataFromFields( QStringList fields ) {
+SondeData ReadingThread::DataFromFields( QStringList fields )
+{
     SondeData data;
 
     int hour = fields[GPSTime].mid(0,2).toInt();
@@ -61,12 +45,33 @@ SondeData ReadingThread::DataFromFields( QStringList fields ) {
     if ( fields[GPSLatitudeSign] == "-" )
         data.location.latitude *= -1;
 
-
     data.location.longitude = longitude2degrees( fields[GPSLongitude].toFloat() );
     if ( fields[GPSLongitudeSign] == "-" )
         data.location.longitude *= -1;
 
     data.location.height = fields[GPSHeight].toFloat();
+
+    data.analogHumidity = (fields[HumidityAnalog].toInt()-170)/6.0; //don't know why
+    data.analogTemperature = fields[TemperatureAnalog].toInt()*1.083-721; //don't know why
+
+    double pressureVoltage = 5*fields[PreassureAnalog].toDouble()/1023; // 10 bits => 1023
+    data.analogPressure = (1000*pressureVoltage/5+95)/9;  //from datasheet
+
+    //values from sensirion datasheet
+    const double SORH_C1 = -2.0468;
+    const double SORH_C2 = 0.0367;
+    const double SORH_C3 = -1.5955E-6;
+
+    double sensirionValue = fields[HumiditySensirion].toDouble();
+
+    data.sensirionHumidity = SORH_C1 + SORH_C2 * sensirionValue + SORH_C3 * sensirionValue * sensirionValue;
+
+    //values from sensirion datasheet
+    const double SOTEMP_D1 = -40.1;
+    const double SOTEMP_D2 = 0.01;
+
+    data.sensirionTemperature = SOTEMP_D1 + SOTEMP_D2 * fields[TemperatureSensirion].toDouble();
+
 
     return data;
 }
@@ -104,11 +109,6 @@ void ReadingThread::process( const string &frame )
     }
 
     SondeData data = DataFromFields( fields );
-
-    cout<<data.location.time<<endl;
-    cout<<data.location.latitude<<endl;
-    cout<<data.location.longitude<<endl;
-    cout<<data.location.height<<endl;
 
     emit newSondeData( data );
     emit newSondeMsg( myframe );
@@ -166,4 +166,5 @@ void SondeViewer::disconnectSlot()
 void SondeViewer::newSondeMsg(QString msg)
 {
     log->insertPlainText( msg + '\n' );
+    log->ensureCursorVisible();
 }

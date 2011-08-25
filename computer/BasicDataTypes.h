@@ -38,6 +38,11 @@ class SondeData
 {
 public:
     EarthPoint4D location;
+    double analogPressure;
+    double analogHumidity;
+    double analogTemperature;
+    double sensirionTemperature;
+    double sensirionHumidity;
 };
 
 #endif // BASICDATATYPES_H

@@ -12,6 +12,21 @@
 using std::string;
 using boost::posix_time::ptime;
 
+enum SondeFields
+{
+    PreassureAnalog = 0,
+    TemperatureAnalog,
+    HumidityAnalog,
+    TemperatureSensirion,
+    HumiditySensirion,
+    GPSTime,
+    GPSLatitudeSign,
+    GPSLatitude,
+    GPSLongitudeSign,
+    GPSLongitude,
+    GPSHeight,
+    SondeFieldCount
+};
 
 
 class ReadingThread : public QThread

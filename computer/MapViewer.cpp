@@ -77,7 +77,7 @@ void MapViewer::fillJavaScript(QStringList &code)
 	code<<"function initialize() {"
             <<"var latlng = new google.maps.LatLng(-33.457967, -70.661896);"
 	    <<"var myOptions = {"
-            <<"zoom: 18,"
+	    <<"zoom: 17,"
 	    <<"panControl: true,"
 	    <<"zoomControl: true,"
 	    <<"scaleControl: true,"
