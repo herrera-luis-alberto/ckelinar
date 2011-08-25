@@ -1,22 +1,26 @@
 #include "SondeViewer.h"
 #include <QHBoxLayout>
 #include <QLabel>
-#include <iostream>
+#include <fstream>
+using std::ofstream;
+using std::endl;
 
-using namespace std;
-
-ReadingThread::ReadingThread( const QString &port )
+ReadingThread::ReadingThread( const QString &port, const QString &logFilename_)
     : isRunning ( true )
     , portName ( port )
     , serial(port.toStdString(), 38400)
+    , logFilename(logFilename_)
 {
 }
 
 void ReadingThread::run()
 {
+    ofstream log( logFilename.toStdString().c_str() );
     while( isRunning )
     {
-        process( serial.readLine() );
+	string line = serial.readLine();
+	log<<":"<<line<<endl;
+	process( line );
 
     }
 }
@@ -25,8 +29,6 @@ void ReadingThread::requestStop()
 {
     isRunning = false;
 }
-
-
 
 SondeData ReadingThread::DataFromFields( QStringList fields )
 {
@@ -124,6 +126,7 @@ SondeViewer::SondeViewer(QWidget *parent)
     disconnectButton = new QPushButton("Disconnect", this);
     disconnectButton->setEnabled(false);
     port = new QLineEdit("/dev/ttyUSB0", this);
+    logFilename = new QLineEdit("log.txt", this);
     log = new QTextEdit(this);
     log->setReadOnly(true);
 
@@ -131,6 +134,7 @@ SondeViewer::SondeViewer(QWidget *parent)
     header->addWidget( disconnectButton );
     header->addWidget( new QLabel("Port:") );
     header->addWidget( port );
+    header->addWidget( logFilename );
 
     layout->addLayout(header, 0, 0);
     layout->addWidget(log, 1, 0);
@@ -145,7 +149,7 @@ SondeViewer::SondeViewer(QWidget *parent)
 
 void SondeViewer::connectSlot()
 {
-   readThread = new ReadingThread( port->text() );
+   readThread = new ReadingThread( port->text(), logFilename->text() );
    connectButton->setEnabled(false);
    disconnectButton->setEnabled(true);
    connect( readThread, SIGNAL(newSondeMsg(QString)), this, SLOT(newSondeMsg(QString)));

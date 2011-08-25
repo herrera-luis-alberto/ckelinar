@@ -2,6 +2,7 @@
 #include <QTimer>
 #include <QDoubleSpinBox>
 #include <QLabel>
+#include <QPushButton>
 #include "BasicDataTypes.h"
 #include "EarthTrajectory.h"
 
@@ -22,6 +23,11 @@ protected:
     QTimer *updateMap;
 
     EarthTrajectory realTimeTrajectory;
+
+    QPushButton *mapReload;
+    QDoubleSpinBox *mapLatitudeCenter;
+    QDoubleSpinBox *mapLongitudeCenter;
+    QSpinBox *mapZoomLevel;
 
     QDoubleSpinBox *initialLatitude;
     QDoubleSpinBox *initialLongitude;

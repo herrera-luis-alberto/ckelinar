@@ -33,7 +33,7 @@ class ReadingThread : public QThread
 {
     Q_OBJECT
 public:
-    ReadingThread(const QString &port);
+    ReadingThread(const QString &port, const QString &logFilename_);
     void run();
     void requestStop();
 
@@ -59,6 +59,7 @@ protected:
     bool isRunning;
     QString portName;
     SimpleSerial serial;
+    QString logFilename;
 
 };
 
@@ -79,6 +80,7 @@ protected:
     QPushButton *connectButton;
     QPushButton *disconnectButton;
     QLineEdit *port;
+    QLineEdit *logFilename;
     QTextEdit *log;
 
     ReadingThread *readThread;

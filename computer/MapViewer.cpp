@@ -50,6 +50,16 @@ void MapViewer::clear()
 	viewer->setHtml(code.join("\n"));
 }
 
+void MapViewer::setCenter( double latitudeCenter_, double longitudeCenter_ )
+{
+    latitudeCenter = latitudeCenter_;
+    longitudeCenter = longitudeCenter_;
+}
+
+void MapViewer::setZoomLevel( int zoomLevel_ )
+{
+    zoomLevel = zoomLevel_;
+}
 
 
 void MapViewer::fillHtml(QStringList &code)
@@ -74,10 +84,11 @@ void MapViewer::fillHead(QStringList &code)
 
 void MapViewer::fillJavaScript(QStringList &code)
 {
+
 	code<<"function initialize() {"
-            <<"var latlng = new google.maps.LatLng(-33.457967, -70.661896);"
+	    <<QString("var latlng = new google.maps.LatLng(%1, %2);").arg(latitudeCenter).arg(longitudeCenter)
 	    <<"var myOptions = {"
-	    <<"zoom: 17,"
+	    <<QString("zoom: %1,").arg(zoomLevel)
 	    <<"panControl: true,"
 	    <<"zoomControl: true,"
 	    <<"scaleControl: true,"

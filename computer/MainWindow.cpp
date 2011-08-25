@@ -13,6 +13,22 @@ MainWindow::MainWindow()
 
 
     QGridLayout *controlLayout = new QGridLayout;
+
+    mapReload = new QPushButton("Reload Map", this);
+    mapLatitudeCenter = new QDoubleSpinBox(this);
+    mapLatitudeCenter->setRange(-90, 90);
+    mapLatitudeCenter->setValue(-33.457780);
+    mapLatitudeCenter->setDecimals(4);
+    mapLatitudeCenter->setSingleStep(0.0001);
+    mapLongitudeCenter = new QDoubleSpinBox(this);
+    mapLongitudeCenter->setRange(-180, 180);
+    mapLongitudeCenter->setValue(-70.662813);
+    mapLongitudeCenter->setDecimals(4);
+    mapLongitudeCenter->setSingleStep(0.0001);
+    mapZoomLevel = new QSpinBox(this);
+    mapZoomLevel->setRange(1, 20);
+    mapZoomLevel->setValue(16);
+
     initialLatitude = new QDoubleSpinBox(this);
     initialLatitude->setRange(-90, 90);
     initialLatitude->setValue(-33.457780);
@@ -45,18 +61,28 @@ MainWindow::MainWindow()
     releaseHeight->setDecimals(0);
     releaseHeight->setSingleStep(1);
 
-    controlLayout->addWidget( new QLabel("Initial Latitude"), 0, 0);
-    controlLayout->addWidget( initialLatitude, 0, 1);
-    controlLayout->addWidget( new QLabel("Initial Longitude"), 1, 0);
-    controlLayout->addWidget( initialLongitude, 1, 1);
-    controlLayout->addWidget( new QLabel("Initial Height"), 2, 0);
-    controlLayout->addWidget( initialHeight, 2, 1);
-    controlLayout->addWidget( new QLabel("Up Speed"), 3, 0);
-    controlLayout->addWidget( upSpeed, 3, 1);
-    controlLayout->addWidget( new QLabel("Down Speed"), 4, 0);
-    controlLayout->addWidget( downSpeed, 4, 1);
-    controlLayout->addWidget( new QLabel("Release Heaight"), 5, 0);
-    controlLayout->addWidget( releaseHeight, 5, 1);
+    controlLayout->addWidget( new QLabel("Map Options"), 0, 0);
+    controlLayout->addWidget( mapReload, 0, 1);
+    controlLayout->addWidget( new QLabel("Center Latitude"), 1, 0);
+    controlLayout->addWidget( mapLatitudeCenter, 1, 1);
+    controlLayout->addWidget( new QLabel("Center Longitude"), 2, 0);
+    controlLayout->addWidget( mapLongitudeCenter, 2, 1);
+    controlLayout->addWidget( new QLabel("Zoom"), 3, 0);
+    controlLayout->addWidget( mapZoomLevel, 3, 1);
+
+    controlLayout->addWidget( new QLabel("Forecasting Options"), 4, 0, 1, 2);
+    controlLayout->addWidget( new QLabel("Initial Latitude"), 5, 0);
+    controlLayout->addWidget( initialLatitude, 5, 1);
+    controlLayout->addWidget( new QLabel("Initial Longitude"), 6, 0);
+    controlLayout->addWidget( initialLongitude, 6, 1);
+    controlLayout->addWidget( new QLabel("Initial Height"), 7, 0);
+    controlLayout->addWidget( initialHeight, 7, 1);
+    controlLayout->addWidget( new QLabel("Up Speed"), 8, 0);
+    controlLayout->addWidget( upSpeed, 8, 1);
+    controlLayout->addWidget( new QLabel("Down Speed"), 9, 0);
+    controlLayout->addWidget( downSpeed, 9, 1);
+    controlLayout->addWidget( new QLabel("Release Heaight"), 10, 0);
+    controlLayout->addWidget( releaseHeight, 10, 1);
 
 
     QGridLayout *dataLayout = new QGridLayout;
@@ -85,9 +111,11 @@ MainWindow::MainWindow()
 
     updateMap = new QTimer(this);
 
+    connect(mapReload, SIGNAL(clicked()), this, SLOT(reloadMap()));
     connect( sonde, SIGNAL(newSondeData(SondeData)), this, SLOT(newSondeData(SondeData)));
     connect(updateMap, SIGNAL(timeout()), this, SLOT(reloadMap()));
 
+    reloadMap();
     updateMap->start( 20000 );
 
 }
@@ -107,6 +135,8 @@ void MainWindow::newSondeData(SondeData data)
 
 void MainWindow::reloadMap()
 {
+    map->setCenter( mapLatitudeCenter->value(), mapLongitudeCenter->value() );
+    map->setZoomLevel( mapZoomLevel->value() );
     map->clear();
     map->addPath(realTimeTrajectory);
 }

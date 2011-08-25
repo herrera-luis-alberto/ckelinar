@@ -33,7 +33,13 @@ public:
 
         void clear();
 
+	void setCenter( double latitudeCenter_, double longitudeCenter_ );
+	void setZoomLevel( int zoomLevel_ );
+
 protected:
+	double latitudeCenter;
+	double longitudeCenter;
+	double zoomLevel;
         /**
           * \brief fillHtml is a method that generates html code.
           * It calls the next fill methods, such as fillHead,
