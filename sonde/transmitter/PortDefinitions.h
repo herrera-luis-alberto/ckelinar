@@ -18,4 +18,6 @@
 #define communicationRxPin 9
 #define communicationTxPin 3
 
+#define nanoMusclePort 7
+
 #endif
