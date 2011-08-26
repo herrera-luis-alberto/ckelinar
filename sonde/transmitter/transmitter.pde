@@ -63,6 +63,9 @@ void loop() {
   
   uint16_t rawData;
 
+
+    globalCounter = eeprom_read_dword(0);
+
   dataInterface.startDataFrame();
 
   dataInterface.sendData( globalCounter );
@@ -89,6 +92,8 @@ void loop() {
     readCamera( globalCounter / 256 );
 
     globalCounter++;
+
+eeprom_write_dword( 0, globalCounter );
 
   delay(1000);
 }
