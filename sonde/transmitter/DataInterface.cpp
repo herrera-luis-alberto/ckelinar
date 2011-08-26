@@ -54,6 +54,23 @@ void DataInterface::sendData(const char data[])
   print(data);
 }
 
+void DataInterface::startImage( uint16_t counter)
+{
+    char name[13]; // 8.3 format
+    sprintf ( name, "im%u.jpg", counter );
+    imageFile = SD.open( name, O_CREAT | O_WRITE);
+}
+
+void DataInterface::writeImage( uint16_t packageSize, byte* package)
+{
+    imageFile.write( package, packageSize);
+}
+
+void DataInterface::endImage()
+{
+    imageFile.close();
+}
+
 
 bool DataInterface::printSeparator()
 {

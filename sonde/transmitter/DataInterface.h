@@ -16,12 +16,19 @@ public:
   void sendData(int data);
   void sendData(const char data[]);
 
+  void startImage( uint16_t counter);
+  void writeImage( uint16_t packageSize, byte* package);
+  void endImage();
+
+  NewSoftSerial serialImpl;
+
 private:
   File dataFile;
+  File imageFile;
   bool first;
   
   bool printSeparator();
-  NewSoftSerial serialImpl;
+
   Print *serial;
 };
 

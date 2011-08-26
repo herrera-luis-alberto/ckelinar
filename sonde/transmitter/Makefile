@@ -1,6 +1,6 @@
 ARDUINO_DIR = /usr/share/arduino
 TARGET = SondaTransmitter
-ARDUINO_LIBS = NewSoftSerial SoftwareSerial SD SD/utility
+ARDUINO_LIBS = CameraC328R NewSoftSerial SoftwareSerial SD SD/utility
 MCU = atmega328p
 F_CPU = 16000000
 ARDUINO_PORT = /dev/ttyUSB0
