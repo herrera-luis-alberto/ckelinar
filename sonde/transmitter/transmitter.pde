@@ -3,13 +3,14 @@
 #include "GPSReader.h"
 #include "DataInterface.h"
 #include <CameraC328R.h>
+#include "avr/eeprom.h"
 
 Sensirion sensirion = Sensirion( sensirionDataPin, sensirionClockPin);
 GPSReader gps;
 DataInterface dataInterface;
 CameraC328R camera;
 
-uint16_t globalCounter;
+int globalCounter;
 
 
 void setup() {
@@ -61,7 +62,10 @@ void readCamera(uint16_t counter)
 void loop() {
   
   uint16_t rawData;
+
   dataInterface.startDataFrame();
+
+  dataInterface.sendData( globalCounter );
   dataInterface.sendData( analogRead( analogPressurePort ) );
   dataInterface.sendData( analogRead( analogTemperaturePort ) );
   dataInterface.sendData( analogRead( analogHumidityPort ) );
@@ -81,9 +85,11 @@ void loop() {
 
   dataInterface.endDataFrame();
 
-  readCamera( globalCounter );
+  if ( globalCounter % 256 == 0)
+    readCamera( globalCounter / 256 );
 
     globalCounter++;
+
   delay(1000);
 }
 

@@ -14,7 +14,8 @@ using boost::posix_time::ptime;
 
 enum SondeFields
 {
-    PreassureAnalog = 0,
+    FrameCounter = 0,
+    PreassureAnalog,
     TemperatureAnalog,
     HumidityAnalog,
     TemperatureSensirion,

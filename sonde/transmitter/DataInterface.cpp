@@ -56,7 +56,7 @@ void DataInterface::sendData(const char data[])
 
 void DataInterface::startImage( uint16_t counter)
 {
-    char name[13]; // 8.3 format
+    char name[20]; // 8.3 format
     sprintf ( name, "im%u.jpg", counter );
     imageFile = SD.open( name, O_CREAT | O_WRITE);
 }
