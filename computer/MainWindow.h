@@ -18,6 +18,7 @@ public:
 public slots:
     void newSondeData(SondeData data);
     void reloadMap();
+    void uploadMap();
 protected:
     TrajectoryForecaster forecaster;
     MapViewer *map;
@@ -27,6 +28,7 @@ protected:
     EarthTrajectory realTimeTrajectory;
 
     QPushButton *mapReload;
+    QPushButton *mapUpload;
     QDoubleSpinBox *mapLatitudeCenter;
     QDoubleSpinBox *mapLongitudeCenter;
     QSpinBox *mapZoomLevel;

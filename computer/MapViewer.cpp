@@ -3,6 +3,8 @@
 #include <QStringList>
 #include <QGridLayout>
 #include <QWebView>
+#include <QFile>
+#include <QTextStream>
 #include <iostream>
 using std::stringstream;
 
@@ -71,6 +73,16 @@ void MapViewer::fillHtml(QStringList &code)
 	fillHead(code);
 	fillBody(code);
 	code<<"</html>";
+
+        QFile fileOut("SondeMap.html");
+        if (fileOut.open(QFile::WriteOnly | QFile::Text)) {
+          QTextStream s(&fileOut);
+          for (int i = 0; i < code.size(); ++i)
+            s << code.at(i) << '\n';
+        } else {
+          std::cerr << "Error opening output file.\n";
+        }
+        fileOut.close();
 }
 
 void MapViewer::fillHead(QStringList &code)

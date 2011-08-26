@@ -3,7 +3,10 @@
 #include "SondeViewer.h"
 #include <QGridLayout>
 #include <vector>
+#include <iostream>
 using std::vector;
+using std::cout;
+using std::endl;
 
 MainWindow::MainWindow()
     : forecaster ( "wrfout_d02_160511.nc" )
@@ -18,6 +21,7 @@ MainWindow::MainWindow()
     QGridLayout *controlLayout = new QGridLayout;
 
     mapReload = new QPushButton("Reload Map", this);
+    mapUpload = new QPushButton("Upload Map", this);
     mapLatitudeCenter = new QDoubleSpinBox(this);
     mapLatitudeCenter->setRange(-90, 90);
     mapLatitudeCenter->setValue(-33.457780);
@@ -115,7 +119,7 @@ MainWindow::MainWindow()
     controlLayout->addWidget( downSpeed, 14, 1);
     controlLayout->addWidget( new QLabel("Release Heaight"), 15, 0);
     controlLayout->addWidget( releaseHeight, 15, 1);
-
+    controlLayout->addWidget( mapUpload, 16, 1);
 
     QGridLayout *dataLayout = new QGridLayout;
     analogPressure = new QLabel(this);
@@ -146,6 +150,8 @@ MainWindow::MainWindow()
     connect(mapReload, SIGNAL(clicked()), this, SLOT(reloadMap()));
     connect( sonde, SIGNAL(newSondeData(SondeData)), this, SLOT(newSondeData(SondeData)));
     connect(updateMap, SIGNAL(timeout()), this, SLOT(reloadMap()));
+
+    connect(mapUpload, SIGNAL(clicked()), this, SLOT(uploadMap()));
 
     reloadMap();
     updateMap->start( 20000 );
@@ -199,4 +205,10 @@ void MainWindow::reloadMap()
 
     map->addPath(staticPredictedUp);
 
+}
+
+void MainWindow::uploadMap()
+{
+    system("scp SondeMap.html kmundnic@172.17.73.222:~/www/");
+    cout<<"Map was successfully uploaded."<<endl;
 }
