@@ -29,13 +29,12 @@ protected:
 	float *lon_data;
 	float *u_gr_p_data;
 	float *v_gr_p_data;
-	float *pressure;
 	float *Z_p_data;
 
 	/** multi_array interface to the data, allows to use the c-style
 	  * way to acces to the data */
-	boost::const_multi_array_ref<float, 2> *lat;
-	boost::const_multi_array_ref<float, 2> *lon;
+	boost::const_multi_array_ref<float, 3> *lat;
+	boost::const_multi_array_ref<float, 3> *lon;
 	boost::const_multi_array_ref<float, 4> *u_gr_p;
 	boost::const_multi_array_ref<float, 4> *v_gr_p;
 	boost::const_multi_array_ref<float, 4> *Z_p;
@@ -63,8 +62,8 @@ protected:
 
 
 	static boost::const_multi_array_ref<float, 2> *read2DimVar(const NcFile &data, const string& name, float* buffer);
-
-	static boost::const_multi_array_ref<float, 4> *read4DimVar(const NcFile &data, const string& name, float* buffer);
+	static boost::const_multi_array_ref<float, 3> *read3DimVar(const NcFile &data, const string& name, float* buffer);
+	static boost::const_multi_array_ref<float, 4> *read4DimVar(const NcFile &data, const string& name, float** buffer);
 
 	/**
 	 * bilinearInterpolation generates an interpolation of a point in between the points of the grid.
