@@ -16,6 +16,8 @@ SET( BC_SRCS
         SondeViewer.h
 	BasicDataTypes.h
         SimpleSerial.h
+        Ground.cpp
+        Ground.h
 )
 
   
