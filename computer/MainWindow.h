@@ -19,6 +19,7 @@ public slots:
     void newSondeData(SondeData data);
     void reloadMap();
     void uploadMap();
+    void uploadKML();
 protected:
     TrajectoryForecaster forecaster;
     MapViewer *map;

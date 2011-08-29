@@ -9,7 +9,7 @@ using std::cout;
 using std::endl;
 
 MainWindow::MainWindow()
-    : forecaster ( "wrfout_d02_160511.nc" )
+    : forecaster ( "dom270800.nc" )
 {
     QGridLayout *layout = new QGridLayout(this);
     map = new MapViewer(this);
@@ -196,6 +196,10 @@ void MainWindow::reloadMap()
     EarthTrajectory staticPredictedUp = forecaster.getTrayectory( init, upSpeed->value(), 100);
     vector<EarthPoint4D> releasePoint = staticPredictedUp.findLevelPoints( releaseHeight->value() );
 
+    cout<<"Att"<<endl;
+    for ( int i=0; i<staticPredictedUp.size(); i++)
+	    cout<<staticPredictedUp[i].height<<endl;
+
     if ( releasePoint.size() > 0)
     {
 	map->addMarker( releasePoint[0] );
@@ -209,6 +213,12 @@ void MainWindow::reloadMap()
 
 void MainWindow::uploadMap()
 {
-    system("scp SondeMap.html kmundnic@172.17.73.222:~/www/");
+    system("scp SondeMap.html kmundnic@cipres.cec.uchile.cl:~/pub_www/");
     cout<<"Map was successfully uploaded."<<endl;
+}
+
+void MainWindow::uploadKML()
+{
+    system("scp EarthMap.kml kmundnic@cipres.cec.uchile.cl:~/pub_www");
+    cout<<"KML was succesfully uploaded."<<endl;
 }

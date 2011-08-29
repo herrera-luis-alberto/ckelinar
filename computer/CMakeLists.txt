@@ -16,6 +16,8 @@ SET( BC_SRCS
         SondeViewer.h
 	BasicDataTypes.h
         SimpleSerial.h
+        Ground.cpp
+        Ground.h
 )
 
   
@@ -33,7 +35,7 @@ SET( QT_USE_QT3SUPPORT TRUE )
 SET( QT_USE_QTXML TRUE )
 
 find_package(Qt4 REQUIRED QtCore QtGui QtOpenGL QtWebKit)
-find_package(Boost COMPONENTS system filesystem REQUIRED)
+find_package(Boost COMPONENTS system filesystem date_time REQUIRED)
 link_directories(${Boost_LIBRARY_DIRS})
   
 INCLUDE( ${QT_USE_FILE} )

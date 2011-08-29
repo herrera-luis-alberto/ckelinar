@@ -80,6 +80,20 @@ protected:
           * \param code
           */
 	void fillBody(QStringList &code);
+
+        /**
+          * \brief fillKml fills a .kml file that can be opened on
+          * Google Earth.
+          * \param code
+          */
+        void fillKml(QStringList &code);
+        void fillGoogleEarth(QStringList &code);
+        /**
+          * \brief fillEarthMap generates the coordinates and height
+          * which let Google Earth read and plot the .kml file.
+          * \param code
+          */
+        void EarthMap(QStringList &code);
 	QWebView *viewer;
 	vector<EarthTrajectory> paths;
 	vector<EarthPoint4D> marks;
