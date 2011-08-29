@@ -213,6 +213,12 @@ void MainWindow::reloadMap()
 
 void MainWindow::uploadMap()
 {
-    system("scp SondeMap.html kmundnic@172.17.73.222:~/www/");
+    system("scp SondeMap.html kmundnic@cipres.cec.uchile.cl:~/pub_www/");
     cout<<"Map was successfully uploaded."<<endl;
+}
+
+void MainWindow::uploadKML()
+{
+    system("scp EarthMap.kml kmundnic@cipres.cec.uchile.cl:~/pub_www");
+    cout<<"KML was succesfully uploaded."<<endl;
 }

@@ -74,16 +74,84 @@ void MapViewer::fillHtml(QStringList &code)
 	fillBody(code);
 	code<<"</html>";
 
-        QFile fileOut("SondeMap.html");
-        if (fileOut.open(QFile::WriteOnly | QFile::Text)) {
-          QTextStream s(&fileOut);
+        QFile SondeMap("SondeMap.html");
+        if (SondeMap.open(QFile::WriteOnly | QFile::Text)) {
+          QTextStream s(&SondeMap);
           for (int i = 0; i < code.size(); ++i)
             s << code.at(i) << '\n';
         } else {
-          std::cerr << "Error opening output file.\n";
+          std::cerr << "Error opening output file SondeMap.html\n";
         }
-        fileOut.close();
+        SondeMap.close();
+        QStringList bla;
+        fillKml( bla);
 }
+
+void MapViewer::fillKml(QStringList &code)
+{
+    code<<"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+        <<"<kml>"
+        <<"  <Document>"
+        <<"    <Style id=\"yellowLineGreenPoly\">"
+        <<"      <LineStyle>"
+        <<"        <color>7f00ffff</color>"
+        <<"        <width>4</width>"
+        <<"      </LineStyle>"
+        <<"      <PolyStyle>"
+        <<"        <color>7f00ff00</color>"
+        <<"      </PolyStyle>"
+        <<"    </Style>";
+
+
+
+    fillGoogleEarth(code);
+
+
+        code<<"  </Document>"
+        <<"</kml>";
+
+    QFile EarthMap("EarthMap.kml");
+    if (EarthMap.open(QFile::WriteOnly | QFile::Text)) {
+    QTextStream s(&EarthMap);
+    for (int i = 0; i < code.size(); ++i)
+      s << code.at(i) << '\n';
+    } else {
+    std::cerr << "Error opening output file EarthMap.kml\n";
+    }
+    EarthMap.close();
+}
+
+void MapViewer::fillGoogleEarth(QStringList &code)
+{
+    for ( int i=0; i<paths.size(); i++)
+    {
+       EarthTrajectory currentPath = paths[i];
+       code<<"    <Placemark>"
+       <<"      <name>Absolute Extruded</name>"
+       <<"      <description>Transparent green wall with yellow outlines</description>"
+       <<"      <styleUrl>#yellowLineGreenPoly</styleUrl>"
+       <<"      <LineString>"
+       <<"        <extrude>1</extrude>"
+       <<"        <tessellate>1</tessellate>"
+       <<"        <altitudeMode>absolute</altitudeMode>"
+       <<"        <coordinates>";
+
+            for ( int i=0; i<currentPath.size(); i++)
+            {
+                    stringstream line;
+                    line<<currentPath[i].longitude <<","<< currentPath[i].latitude<<","<<currentPath[i].height;
+
+                    code<<line.str().c_str();
+
+            }
+
+
+    code<<"        </coordinates>"
+        <<"      </LineString>"
+        <<"    </Placemark>";
+    }
+}
+
 
 void MapViewer::fillHead(QStringList &code)
 {
