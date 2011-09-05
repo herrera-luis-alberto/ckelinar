@@ -39,33 +39,31 @@ void getJPEGPicture_callback( uint16_t pictureSize, uint16_t packageSize, uint16
 void readCamera(uint16_t counter)
 {
     dataInterface.serialImpl.print(":");
-    dataInterface.serialImpl.print("A");
+    dataInterface.serialImpl.print("I");
     if( !camera.sync() )
       return;
 
-    dataInterface.serialImpl.print("B");
     if( !camera.initial( CameraC328R::CT_JPEG, CameraC328R::PR_160x120, CameraC328R::JR_640x480 ) )
       return;
 
-    dataInterface.serialImpl.print("C");
     if( !camera.setPackageSize( 64 ) )
       return;
 
-    dataInterface.serialImpl.print("D");
     if( !camera.setLightFrequency( CameraC328R::FT_50Hz ) )
       return;
 
-    dataInterface.serialImpl.print("E");
     if( !camera.snapshot( CameraC328R::ST_COMPRESSED, 0 ) )
       return;
 
-    dataInterface.serialImpl.print("F");
     dataInterface.startImage( counter );
     if( !camera.getJPEGPicture( CameraC328R::PT_JPEG, PROCESS_DELAY, &getJPEGPicture_callback ) )
-      return;
-
+    {
     dataInterface.endImage();
-    dataInterface.serialImpl.print("G");
+      return;
+      }
+      dataInterface.endImage();
+
+
 
 }
 
@@ -83,7 +81,7 @@ void release()
 
 void checkForRelease(int pressure, uint16_t temperature )
 {
-    const int pressureLimit    = 200;
+    const int pressureLimit    = 640;
     const int temperatureLimit = 200;
     const int limitLimit = 5;
 
@@ -140,8 +138,8 @@ void loop() {
 
   dataInterface.endDataFrame();
 
-  if ( globalCounter % 16 == 0)
-  readCamera( globalCounter / 16 );
+  if ( globalCounter % 64 == 0)
+  readCamera( globalCounter / 64 );
 
   globalCounter++;
 
