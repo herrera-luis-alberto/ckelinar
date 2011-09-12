@@ -9,7 +9,7 @@ DataInterface::DataInterface()
 
 void DataInterface::begin()
 {
-  serialImpl.begin( 9600 );
+  serialImpl.begin( 1200 );
   pinMode(10, OUTPUT);
 
   const int chipSelect = 8;
