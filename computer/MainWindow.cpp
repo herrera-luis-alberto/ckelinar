@@ -160,7 +160,8 @@ MainWindow::MainWindow()
 
 void MainWindow::newSondeData(SondeData data)
 {
-    realTimeTrajectory.push_back(data.location);
+    if ( data.location.latitude != 0 && data.location.longitude != 0)
+	realTimeTrajectory.push_back(data.location);
 
     analogHumidity->setText( QString("%1").arg(data.analogHumidity));
     analogPressure->setText( QString("%1").arg(data.analogPressure));
