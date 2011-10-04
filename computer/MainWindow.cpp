@@ -9,7 +9,7 @@ using std::cout;
 using std::endl;
 
 MainWindow::MainWindow()
-    : forecaster ( "dom270800.nc" )
+    : forecaster ( "wrfpost05.nc" )
 {
     QGridLayout *layout = new QGridLayout(this);
     map = new MapViewer(this);
@@ -196,10 +196,6 @@ void MainWindow::reloadMap()
 
     EarthTrajectory staticPredictedUp = forecaster.getTrayectory( init, upSpeed->value(), 100);
     vector<EarthPoint4D> releasePoint = staticPredictedUp.findLevelPoints( releaseHeight->value() );
-
-    cout<<"Att"<<endl;
-    for ( int i=0; i<staticPredictedUp.size(); i++)
-	    cout<<staticPredictedUp[i].height<<endl;
 
     if ( releasePoint.size() > 0)
     {

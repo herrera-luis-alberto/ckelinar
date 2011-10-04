@@ -33,6 +33,7 @@ TrajectoryForecaster::TrajectoryForecaster(const string &file)
 	, lon_data ( NULL )
 	, u_gr_p_data ( NULL )
 	, v_gr_p_data ( NULL )
+	, pressure ( NULL )
 	, Z_p_data ( NULL )
 	, lat ( NULL )
 	, lon ( NULL )
@@ -45,24 +46,12 @@ TrajectoryForecaster::TrajectoryForecaster(const string &file)
 
 	NcFile data(file.c_str());
 
-	cout<<"XLAT..."<<flush;
-	lat = read3DimVar(data, "XLAT", lat_data);
-	cout<<"OK"<<endl<<"XLONG..."<<flush;
-	lon = read3DimVar(data, "XLONG", lon_data);
-	cout<<"OK"<<endl<<"U..."<<flush;
-	u_gr_p = read4DimVar(data, "U", &u_gr_p_data);
-	cout<<"OK"<<endl<<"V..."<<flush;
-	v_gr_p = read4DimVar(data, "V", &v_gr_p_data);
-	cout<<"OK"<<endl<<"PHB..."<<flush;
-	Z_p = read4DimVar(data, "PHB", &Z_p_data);
-	cout<<"OK";
-
-	int zSize = Z_p->shape()[0]*Z_p->shape()[1]*Z_p->shape()[2]*Z_p->shape()[3];
-
-	for ( int i=0; i<zSize; i++)
-		Z_p_data[i] = Z_p_data[i]/9.8;
-
-
+	lat = read2DimVar(data, "lat", lat_data);
+	lon = read2DimVar(data, "lon", lon_data);
+	u_gr_p = read4DimVar(data, "u_gr_p", u_gr_p_data);
+	v_gr_p = read4DimVar(data, "v_gr_p", v_gr_p_data);
+	pressure = read1DimVar(data, "pressure");
+	Z_p = read4DimVar(data, "Z_p", Z_p_data);
 
 	readTime( data );
 
@@ -77,6 +66,7 @@ TrajectoryForecaster::~TrajectoryForecaster()
 	delete [] lon_data;
 	delete [] u_gr_p_data;
 	delete [] v_gr_p_data;
+	delete [] pressure;
 	delete [] Z_p_data;
 
 	delete lat;
@@ -103,6 +93,9 @@ EarthTrajectory TrajectoryForecaster::getTrayectory(const EarthPoint4D &begin, f
 	{
 		if ( iterationStep( pre, post, upSpeed, deltaT, sigmaNoise) == false )
 			break;
+		if ( isnan(post.latitude) || isnan(post.longitude) )
+		    break;
+
 		result.push_back( post );
 
 		pre = post;
@@ -169,12 +162,12 @@ bool TrajectoryForecaster::getArrayIndex(const EarthPoint4D &point, int *latInde
 		if ( time[*timeIndex] <= point.time )
 			break;
 
-	for ( *latIndex = lat->shape()[1]-1; *latIndex >= 0; (*latIndex)-- )
-		if ( (*lat)[0][*latIndex][0] <= point.latitude )
+	for ( *latIndex = lat->shape()[0]-1; *latIndex >= 0; (*latIndex)-- )
+		if ( (*lat)[*latIndex][0] <= point.latitude )
 			break;
 
-	for ( *lonIndex = lon->shape()[2]-1; *lonIndex >= 0; (*lonIndex)-- )
-		if ( (*lon)[0][0][*lonIndex] <= point.longitude )
+	for ( *lonIndex = lon->shape()[1]-1; *lonIndex >= 0; (*lonIndex)-- )
+		if ( (*lon)[0][*lonIndex] <= point.longitude )
 			break;
 
 	if ( *timeIndex < 0 || *timeIndex == time.size()-1)
@@ -216,25 +209,22 @@ bool TrajectoryForecaster::getArrayIndex(const EarthPoint4D &point, int *latInde
 void TrajectoryForecaster::readTime(const NcFile &data )
 {
 
-	string startTimeString = data.get_att("START_DATE")->as_string(0);
-	int underScore = startTimeString.find("_");
-	startTimeString[underScore] = ' ';
-	ptime startTime = boost::posix_time::time_from_string( startTimeString );
+	float *year = read1DimVar(data, "year");
+	float *month = read1DimVar(data, "month");
+	float *day = read1DimVar(data, "day");
+	float *hour = read1DimVar(data, "hour");
 
-	cout<<"StartTime: "<<startTimeString<<endl;
-	cout<<"StartTime: "<<startTime<<endl;
-
-	float *minutes = read1DimVar(data, "XTIME"); //XTIME is time in minutes
-
-	int n = data.get_var("XTIME")->num_vals();
+	int n = data.get_var("year")->num_vals();
 
 	for ( int i=0; i<n; i++ )
 	{
-		time.push_back( startTime + boost::posix_time::minutes(minutes[i]) );
-		cout<<time[time.size()-1]<<endl;
+		time.push_back( ptime( boost::gregorian::date(year[i],month[i],day[i]), boost::posix_time::hours(hour[i])) );
 	}
 
-	delete [] minutes;
+	delete [] year;
+	delete [] month;
+	delete [] day;
+	delete [] hour;
 }
 
 
@@ -260,37 +250,24 @@ boost::const_multi_array_ref<float, 2> *TrajectoryForecaster::read2DimVar(const 
 	return new boost::const_multi_array_ref<float, 2>( buffer, boost::extents[u_gr_p_data_1dim][u_gr_p_data_2dim]);
 }
 
-boost::const_multi_array_ref<float, 3> *TrajectoryForecaster::read3DimVar(const NcFile &data, const string& name, float* buffer)
-{
-	int u_gr_p_data_1dim = data.get_var(name.c_str())->get_dim(0)->size();
-	int u_gr_p_data_2dim = data.get_var(name.c_str())->get_dim(1)->size();
-	int u_gr_p_data_3dim = data.get_var(name.c_str())->get_dim(2)->size();
-
-	buffer = new float[u_gr_p_data_1dim*u_gr_p_data_2dim*u_gr_p_data_3dim];
-
-	data.get_var(name.c_str())->get(buffer,u_gr_p_data_1dim, u_gr_p_data_2dim, u_gr_p_data_3dim  );
-
-	return new boost::const_multi_array_ref<float, 3>( buffer, boost::extents[u_gr_p_data_1dim][u_gr_p_data_2dim][u_gr_p_data_3dim]);
-}
-
-boost::const_multi_array_ref<float, 4> *TrajectoryForecaster::read4DimVar(const NcFile &data, const string& name, float** buffer)
+boost::const_multi_array_ref<float, 4> *TrajectoryForecaster::read4DimVar(const NcFile &data, const string& name, float* buffer)
 {
 	int u_gr_p_data_1dim = data.get_var(name.c_str())->get_dim(0)->size();
 	int u_gr_p_data_2dim = data.get_var(name.c_str())->get_dim(1)->size();
 	int u_gr_p_data_3dim = data.get_var(name.c_str())->get_dim(2)->size();
 	int u_gr_p_data_4dim = data.get_var(name.c_str())->get_dim(3)->size();
 
-	*buffer = new float[u_gr_p_data_1dim*u_gr_p_data_2dim*u_gr_p_data_3dim*u_gr_p_data_4dim];
+	buffer = new float[u_gr_p_data_1dim*u_gr_p_data_2dim*u_gr_p_data_3dim*u_gr_p_data_4dim];
 
-	data.get_var(name.c_str())->get(*buffer,u_gr_p_data_1dim, u_gr_p_data_2dim, u_gr_p_data_3dim, u_gr_p_data_4dim  );
+	data.get_var(name.c_str())->get(buffer,u_gr_p_data_1dim, u_gr_p_data_2dim, u_gr_p_data_3dim, u_gr_p_data_4dim  );
 
-	return new boost::const_multi_array_ref<float, 4>( *buffer, boost::extents[u_gr_p_data_1dim][u_gr_p_data_2dim][u_gr_p_data_3dim][u_gr_p_data_4dim]);
+	return new boost::const_multi_array_ref<float, 4>( buffer, boost::extents[u_gr_p_data_1dim][u_gr_p_data_2dim][u_gr_p_data_3dim][u_gr_p_data_4dim]);
 }
 
 
 float TrajectoryForecaster::bilinearInterpolation(float latitude, float longitude, boost::const_multi_array_ref<float, 4> *data, int t, int h, int latIndex, int lonIndex){
-	float latAlpha = ((*lat)[0][latIndex+1][lonIndex] - latitude) / ((*lat)[0][latIndex+1][lonIndex] - (*lat)[0][latIndex][lonIndex]);
-	float lonAlpha = ((*lon)[0][latIndex][lonIndex+1] - longitude) / ((*lon)[0][latIndex][lonIndex+1] - (*lon)[0][latIndex][lonIndex]);
+	float latAlpha = ((*lat)[latIndex+1][lonIndex] - latitude) / ((*lat)[latIndex+1][lonIndex] - (*lat)[latIndex][lonIndex]);
+	float lonAlpha = ((*lon)[latIndex][lonIndex+1] - longitude) / ((*lon)[latIndex][lonIndex+1] - (*lon)[latIndex][lonIndex]);
 
 	//interpolate the wind in the lower layer
 	float tmp1 = linearInterpolation(latAlpha, (*data)[t][h][latIndex][lonIndex], (*data)[t][h][latIndex+1][lonIndex]);
