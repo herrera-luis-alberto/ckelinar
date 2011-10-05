@@ -81,8 +81,8 @@ void release()
 
 void checkForRelease(int pressure, uint16_t temperature )
 {
-    const int pressureLimit    = 640;
-    const int temperatureLimit = 200;
+    const int pressureLimit    = 466;
+    const int temperatureLimit = 2910;
     const int limitLimit = 5;
 
     if ( pressure < pressureLimit )
@@ -101,7 +101,7 @@ void checkForRelease(int pressure, uint16_t temperature )
     if ( temperatureConditionCounter > limitLimit )
       release();
     
-    if ( globalCounter > 780 )
+    if ( globalCounter > 320 )
       release();
 
 }

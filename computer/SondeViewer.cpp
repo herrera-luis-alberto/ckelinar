@@ -57,7 +57,8 @@ SondeData ReadingThread::DataFromFields( QStringList fields )
     data.analogTemperature = fields[TemperatureAnalog].toInt()*1.083-721; //don't know why
 
     double pressureVoltage = 5*fields[PreassureAnalog].toDouble()/1023; // 10 bits => 1023
-    data.analogPressure = (1000*pressureVoltage/5+95)/9;  //from datasheet
+    //data.analogPressure = (1000*pressureVoltage/5+95)/9;  //from datasheet
+    data.analogPressure = (222.633*pressureVoltage + 42.2667);  //from datasheet
 
     //values from sensirion datasheet
     const double SORH_C1 = -2.0468;

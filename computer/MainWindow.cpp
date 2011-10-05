@@ -9,7 +9,7 @@ using std::cout;
 using std::endl;
 
 MainWindow::MainWindow()
-    : forecaster ( "wrfpost05.nc" )
+    : forecaster ( "wrfpost_05.nc" )
 {
     QGridLayout *layout = new QGridLayout(this);
     map = new MapViewer(this);
