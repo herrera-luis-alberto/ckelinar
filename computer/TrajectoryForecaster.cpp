@@ -1,5 +1,6 @@
 #include "TrajectoryForecaster.h"
 #include <netcdfcpp.h>
+#include <boost/math/special_functions/fpclassify.hpp>
 #include <math.h>
 #include <iostream>
 using std::cout;
@@ -93,7 +94,7 @@ EarthTrajectory TrajectoryForecaster::getTrayectory(const EarthPoint4D &begin, f
 	{
 		if ( iterationStep( pre, post, upSpeed, deltaT, sigmaNoise) == false )
 			break;
-		if ( isnan(post.latitude) || isnan(post.longitude) )
+                if ( boost::math::isnan(post.latitude) || boost::math::isnan(post.longitude) )
 		    break;
 
 		result.push_back( post );
