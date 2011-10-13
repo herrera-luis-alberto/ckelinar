@@ -34,7 +34,7 @@ MainWindow::MainWindow()
     mapLongitudeCenter->setSingleStep(0.0001);
     mapZoomLevel = new QSpinBox(this);
     mapZoomLevel->setRange(1, 20);
-    mapZoomLevel->setValue(16);
+    mapZoomLevel->setValue(9);
 
     initialLatitude = new QDoubleSpinBox(this);
     initialLatitude->setRange(-90, 90);
@@ -80,7 +80,7 @@ MainWindow::MainWindow()
     downSpeed->setSingleStep(0.1);
 
     releaseHeight = new QDoubleSpinBox(this);
-    releaseHeight->setRange(0, 10000);
+    releaseHeight->setRange(0, 30000);
     releaseHeight->setValue(5000);
     releaseHeight->setDecimals(0);
     releaseHeight->setSingleStep(1);
@@ -117,7 +117,7 @@ MainWindow::MainWindow()
     controlLayout->addWidget( upSpeed, 13, 1);
     controlLayout->addWidget( new QLabel("Down Speed"), 14, 0);
     controlLayout->addWidget( downSpeed, 14, 1);
-    controlLayout->addWidget( new QLabel("Release Heaight"), 15, 0);
+    controlLayout->addWidget( new QLabel("Release Height"), 15, 0);
     controlLayout->addWidget( releaseHeight, 15, 1);
     controlLayout->addWidget( mapUpload, 16, 1);
 
@@ -194,7 +194,7 @@ void MainWindow::reloadMap()
 		       boost::posix_time::hours(hour) + boost::posix_time::minutes(minute) );
 
 
-    EarthTrajectory staticPredictedUp = forecaster.getTrayectory( init, upSpeed->value(), 100);
+    EarthTrajectory staticPredictedUp = forecaster.getTrayectory( init, upSpeed->value(), 100); //deltaT = 100
     vector<EarthPoint4D> releasePoint = staticPredictedUp.findLevelPoints( releaseHeight->value() );
 
     if ( releasePoint.size() > 0)

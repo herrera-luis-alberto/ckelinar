@@ -132,7 +132,7 @@ bool TrajectoryForecaster::iterationStep( const EarthPoint4D &begin, EarthPoint4
 	float uAdd = linearInterpolation(heightAlpha, uAddL, uAddH)+randn(0, sigmaNoise);
 	float vAdd = linearInterpolation(heightAlpha, vAddL, vAddH)+randn(0, sigmaNoise);
 
-	const float dx = 111195;
+        const float dx = 111195; // 1 latitude degree in kilometers
 	end.latitude = begin.latitude + vAdd*deltaT/dx;
 	end.longitude = begin.longitude + uAdd*deltaT/( dx*cos( deg2rad(end.latitude) ) );
 	end.height = begin.height + upSpeed*deltaT;
