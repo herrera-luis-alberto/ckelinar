@@ -35,7 +35,7 @@ SET( QT_USE_QT3SUPPORT TRUE )
 SET( QT_USE_QTXML TRUE )
 
 find_package(Qt4 REQUIRED QtCore QtGui QtOpenGL QtWebKit)
-find_package(Boost COMPONENTS system filesystem REQUIRED)
+find_package(Boost COMPONENTS system filesystem program_options REQUIRED)
 link_directories(${Boost_LIBRARY_DIRS})
   
 INCLUDE( ${QT_USE_FILE} )

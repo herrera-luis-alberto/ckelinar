@@ -1,3 +1,4 @@
+#include <boost/scoped_ptr.hpp>
 #include <QWidget>
 #include <QTimer>
 #include <QDoubleSpinBox>
@@ -14,14 +15,14 @@ class MainWindow : public QWidget
 {
     Q_OBJECT
 public:
-    MainWindow();
+    MainWindow(TrajectoryForecasterInterface *forecaster);
 public slots:
     void newSondeData(SondeData data);
     void reloadMap();
     void uploadMap();
     void uploadKML();
 protected:
-    TrajectoryForecaster forecaster;
+    boost::scoped_ptr<TrajectoryForecasterInterface> forecaster_;
     MapViewer *map;
     SondeViewer *sonde;
     QTimer *updateMap;
