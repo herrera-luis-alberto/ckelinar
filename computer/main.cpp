@@ -40,6 +40,7 @@ int main(int argc, char *argv[])
 {
   po::options_description command_line_options_descriptions("Allowed options");
   command_line_options_descriptions.add_options()
+      ("help", "Produce help message")
       ("wind_forecast", po::value<string>(), "Set wind forecast WRF file.");
 
   po::variables_map command_line_options;
@@ -47,6 +48,11 @@ int main(int argc, char *argv[])
                                    command_line_options_descriptions),
             command_line_options);
   po::notify(command_line_options);
+
+  if (command_line_options.count("help")) {
+    cout << command_line_options_descriptions << endl;
+    return 1;
+  }
 
   TrajectoryForecasterInterface *trajectory_forecaster = NULL;
   if (command_line_options.count("wind_forecast")) {
