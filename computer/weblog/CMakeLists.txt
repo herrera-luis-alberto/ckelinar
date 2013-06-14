@@ -1,0 +1,17 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 2.6) 
+
+PROJECT(weblog)
+
+SET( WEBLOG_SRCS
+  weblog.cpp
+  mongoose.c
+)
+
+find_package (Threads)
+  
+ADD_DEFINITIONS(-Wall)
+  
+ADD_EXECUTABLE(weblog ${WEBLOG_SRCS})
+TARGET_LINK_LIBRARIES(weblog ${CMAKE_THREAD_LIBS_INIT} ${CMAKE_DL_LIBS})
+
+
